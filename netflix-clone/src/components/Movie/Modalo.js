@@ -1,7 +1,28 @@
 import Modal from 'react-bootstrap/Modal';
-import {Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-function Modalo({cardInfo, show, handleClose}) {
+import axios from 'axios';
+import {useRef} from 'react';
+
+function Modalo({ cardInfo, show, handleClose }) {
+
+    const commentInputRef = useRef("");
+
+     console.log(cardInfo);
+
+    const addToFav = async () => {
+        let comment = commentInputRef.current.value;
+        let fav = { title: cardInfo.title, overview: cardInfo.sourceUrl }
+
+        await axios.post(`https://movie-wael.herokuapp.com/addMovie`, fav)
+            .then(() => {
+                console.log("Done :) ");
+            }).catch((err) => {
+                console.log(err);
+            });
+
+    }
+
     return (
         <>
             <Modal show={show} onHide={handleClose} animation={false}>
@@ -10,14 +31,19 @@ function Modalo({cardInfo, show, handleClose}) {
                 </Modal.Header>
                 <Modal.Body className="body">
                     <h3>{cardInfo.title}</h3>
-                    <img style={{height:"10vh"}} alt="" src={cardInfo.sourceUrl} />
+                    <img style={{ height: "10vh" }} alt="" src={cardInfo.sourceUrl} />
                     <div>
                         <label htmlFor="op">Write Your Opinion</label>
-                        <input placeholder="Write Your Opinion" type="text" id="op" />
+                           <input ref={commentInputRef} placeholder="Write Your Opinion" type="text" id="op" />
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary"> Add To Favorite </Button>
+                <Button variant="primary"
+                     onClick={()=>{
+                        addToFav();
+                        handleClose();
+                     }}
+                    > Add To Favorite </Button>
                 </Modal.Footer>
             </Modal>
         </>
